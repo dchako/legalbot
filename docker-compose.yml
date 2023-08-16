@@ -13,7 +13,7 @@ services:
       MYSQL_ROOT_PASSWORD: 'mypassword'
       MYSQL_USER: 'dchako'
       MYSQL_PASSWORD: 'mypassword'
-      MYSQL_DATABASE: 'legalbot_api_test'
+      MYSQL_DATABASE: 'partnership_system_test'
     ports:
       - 3306:3306
     volumes:
