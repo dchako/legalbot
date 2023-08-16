@@ -3,6 +3,8 @@ from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    ''' Serializer for the user object'''
+
     class Meta:
         model = User
         fields = ['id', 'name', 'email', 'password']
@@ -11,6 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        ''' Create and return a new user'''
+
         password = validated_data.pop('password', None)
         instance = self.Meta.model(**validated_data)
         if password is not None:

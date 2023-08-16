@@ -1,17 +1,18 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed, NotAcceptable
 from .serializers import UserSerializer
 from .models import User
-import jwt, datetime
+import datetime
+import jwt
 
 
-# Create your views here.
 class RegisterView(APIView):
+    ''' Register user'''
+
     def post(self, request):
+        ''' Register user'''
+
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -19,10 +20,14 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
+    ''' Login user'''
+
     def post(self, request):
+        ''' Login user'''
+
         email = request.data.get('email')
         password = request.data.get('password')
-        
+
         if email is None or password is None:
             raise NotAcceptable('email and password is required')
 
@@ -36,11 +41,15 @@ class LoginView(APIView):
 
         payload = {
             'id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-            'iat': datetime.datetime.utcnow()
+            'exp': datetime.datetime.now(datetime.timezone.utc)
+            + datetime.timedelta(minutes=60),
+            'iat': datetime.datetime.now(datetime.timezone.utc),
         }
 
-        token = jwt.encode(payload, 'secret', algorithm='HS256').decode('utf-8')
+        token = jwt.encode(
+            payload, 'secret',
+            algorithm='HS256'
+        ).decode('utf-8')
 
         response = Response()
 
@@ -52,8 +61,11 @@ class LoginView(APIView):
 
 
 class UserView(APIView):
+    ''' Get user'''
 
     def get(self, request):
+        ''' Get user'''
+
         token = request.COOKIES.get('jwt')
 
         if not token:
@@ -70,7 +82,11 @@ class UserView(APIView):
 
 
 class LogoutView(APIView):
+    ''' Logout user '''
+
     def post(self, request):
+        ''' Delete cookie'''
+
         response = Response()
         response.delete_cookie('jwt')
         response.data = {

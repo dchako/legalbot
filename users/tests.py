@@ -1,14 +1,14 @@
 from django.test import TestCase
 import json
 from rest_framework import status
-from django.test import TestCase, Client
+from django.test import Client
 from django.urls import reverse
 from .models import User
-from .serializers import UserSerializer
 
 # Create your tests here.
 
 client = Client()
+
 
 class UserTest(TestCase):
 
@@ -25,8 +25,8 @@ class UserTest(TestCase):
             user_manuel.name, "manuel")
         self.assertEqual(
             user_oscar.name, "oscar")
-        
-        
+
+
 class CreateNewUserTest(TestCase):
 
     def setUp(self):
@@ -56,4 +56,3 @@ class CreateNewUserTest(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        
