@@ -7,6 +7,7 @@ from .serializers import PartnerSerializer
 from .models import Partnership, Partner, Manager
 import jwt
 from django.http import JsonResponse
+from django.db.models import Q
 
 
 # Create your views here.
@@ -99,7 +100,11 @@ class CreateManagerView(APIView):
             raise AuthenticationFailed('Unauthenticated!')
 
         payload = request.data
-        payload.update('partnership_id', pk)
+        partnership = get_object_or_404(
+            Partnership.objects.all(),
+            pk=pk
+        )
+        payload['partnership_id'] = partnership.id
         serializer = ManagerSerializer(data=payload)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -147,7 +152,11 @@ class CreatePartnerView(APIView):
             raise AuthenticationFailed('Unauthenticated!')
 
         payload = request.data
-        payload.update('partnership_id', pk)
+        partnership = get_object_or_404(
+            Partnership.objects.all(),
+            pk=pk
+        )
+        payload['partnership_id'] = partnership.id
         serializer = PartnerSerializer(data=payload)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -201,17 +210,13 @@ def sociedad_by_rut(request):
             status=400
         )
 
-    sociedad = None
-    if partner := get_object_or_404(Partner, rut=rut):
-        sociedad = partner.partnership.first()
+    sociedades = Partnership.objects.filter(
+        Q(managers__rut=rut) | Q(partners__rut=rut)
+    )
 
-    # Si no se encontró en socios, buscar en administradores
-    if not sociedad:
-        if manager := get_object_or_404(Manager, rut=rut):
-            sociedad = manager.partnership.first()
-
-    if sociedad:
-        data = {'nombre_sociedad': sociedad.name}
+    if sociedades.exists():
+        data = {'sociedades': [{'nombre_sociedad': sociedad.name} for sociedad in sociedades]}
     else:
         data = {'mensaje': 'No se encontró ninguna sociedad asociada al RUT'}
+
     return JsonResponse(data)

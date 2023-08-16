@@ -9,7 +9,7 @@ class Partnership(models.Model):
     name = models.CharField(max_length=50, unique=True)
     rut = models.CharField(max_length=9)
     created_at = models.DateTimeField(default=datetime.now(), blank=True)
-    deleted_at = models.DateTimeField(blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
 
 class Partner(models.Model):
@@ -18,8 +18,8 @@ class Partner(models.Model):
     name = models.CharField(max_length=50, unique=True)
     rut = models.CharField(max_length=9)
     entry = models.PositiveIntegerField(default=0, )
-    address = models.CharField(max_length=9)
-    partnership = models.ManyToManyField(Partnership, related_name='parnets')
+    address = models.CharField(max_length=129)
+    partnership = models.ManyToManyField(Partnership, related_name='partners')
 
 
 class Manager(models.Model):
