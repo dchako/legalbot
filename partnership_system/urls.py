@@ -46,6 +46,6 @@ urlpatterns = [
         name='schema-redoc'
     ),
     path('user/', include('users.urls')),
-    path('api/', include('Partnership.urls')),
+    path('api/', include('partnership.urls')),
     path('', HomeView.as_view())
 ]
